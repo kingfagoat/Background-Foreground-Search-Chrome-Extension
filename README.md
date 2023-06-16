@@ -1,8 +1,6 @@
-background-search
+foreground&background-search
 =======
 
-Background search to context menu
+based off Background search to context menu - https://github.com/kyo-ago/background-search
+Added foreground tab search and hotkeys for both
 
-Install
--------
-[background-search](https://chrome.google.com/webstore/detail/background-search/hokopjpmeglhfjpmjboooinnmmnljcom)
