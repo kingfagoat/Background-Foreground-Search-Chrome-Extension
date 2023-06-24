@@ -33,7 +33,6 @@ async function getSelectedText() {
   });
 }
 
-
 chrome.commands.onCommand.addListener(async (command) => {
   try {
     const { tabsCreateUrl } = await tabsCreateUrlPromise;
@@ -53,40 +52,3 @@ chrome.commands.onCommand.addListener(async (command) => {
     console.log(error);
   }
 });
-
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  const { tabsCreateUrl } = await tabsCreateUrlPromise;
-  const search = encodeURIComponent(info.selectionText);
-  chrome.tabs.create({
-    active: false,
-    url: tabsCreateUrl.replace(/%s/g, search),
-    index: tab.index + 1,
-  });
-});
-
-const contextMenuCreate = async () => {
-  const { contextMenusTitle } = await chrome.storage.sync.get({
-    contextMenusTitle: chrome.i18n.getMessage("contextMenusTitle"),
-  });
-
-  chrome.contextMenus.create({
-    id: "root",
-    title: contextMenusTitle,
-    contexts: ["selection", "editable"],
-  });
-};
-
-chrome.storage.onChanged.addListener(
-  async ({ contextMenusTitle }, namespace) => {
-    if (!contextMenusTitle) {
-      return;
-    }
-    if (namespace !== "sync") {
-      return;
-    }
-    await chrome.contextMenus.removeAll();
-    await contextMenuCreate();
-  }
-);
-
-contextMenuCreate();
