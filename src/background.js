@@ -52,3 +52,33 @@ chrome.commands.onCommand.addListener(async (command) => {
     console.log(error);
   }
 });
+// Define a Promise that resolves to the contextMenusTitle value
+const contextMenusTitlePromise = chrome.storage.sync.get({
+  contextMenusTitle: "Search in background for '%s'"
+});
+
+// Create a context menu item with a custom title
+contextMenusTitlePromise.then(({ contextMenusTitle }) => {
+  chrome.contextMenus.create({
+    id: "backgroundSearchCustom",
+    title: `${contextMenusTitle}`,
+    contexts: ["selection"],
+    documentUrlPatterns: contextMenusTitle ? ["http://*/*", "https://*/*"] : []
+  });
+});
+
+// Add a click event listener
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId.startsWith("backgroundSearch")) {
+    try {
+      const { tabsCreateUrl } = await tabsCreateUrlPromise;
+      const search = encodeURIComponent(info.selectionText);
+      chrome.tabs.create({
+        active: false,
+        url: tabsCreateUrl.replace(/%s/g, search),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+});
